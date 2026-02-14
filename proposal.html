@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ❤️</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#ff758c,#ff7eb3);
+  text-align:center;
+  color:white;
+}
+
+/* Floating hearts */
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:20px;
+  animation: float 8s linear infinite;
+}
+@keyframes float{
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
+}
+
+/* Countdown screen */
+#intro{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:#ff4d6d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:60px;
+  z-index:5;
+}
+
+/* Main content */
+#main{
+  display:none;
+  padding:40px;
+}
+
+h1{
+  font-size:30px;
+  text-shadow:0 0 15px white;
+}
+
+.buttons{
+  position:relative;
+  height:200px;
+  margin-top:40px;
+}
+
+button{
+  padding:15px 30px;
+  border:none;
+  border-radius:50px;
+  font-size:18px;
+  cursor:pointer;
+  position:absolute;
+}
+
+#yesBtn{
+  background:#ff1e56;
+  color:white;
+  left:50%;
+  transform:translateX(-50%);
+  top:120px;
+}
+
+#noBtn{
+  background:#333;
+  color:white;
+  left:50%;
+  transform:translateX(-50%);
+  top:60px;
+}
+
+/* Reveal */
+#reveal{
+  display:none;
+  margin-top:30px;
+  animation:fadeIn 1.5s forwards;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(0.8);}
+  to{opacity:1;transform:scale(1);}
+}
+
+img{
+  max-width:90%;
+  border-radius:20px;
+  margin-top:20px;
+}
+
+/* Love meter */
+#meterContainer{
+  width:80%;
+  margin:20px auto;
+  background:white;
+  border-radius:30px;
+  overflow:hidden;
+}
+#meter{
+  height:20px;
+  width:0%;
+  background:#ff1e56;
+  transition:width 2s;
+}
+
+/* Petals */
+.petal{
+  position:fixed;
+  top:-20px;
+  font-size:18px;
+  animation: fall 6s linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">3</div>
+
+<div id="main">
+  <h1>Will you be my Valentine, <span>Neha</span>? 💘</h1>
+
+  <div id="meterContainer">
+    <div id="meter"></div>
+  </div>
+  <div>Calculating love compatibility...</div>
+
+  <div class="buttons">
+    <button id="noBtn">No</button>
+    <button id="yesBtn">Yes</button>
+  </div>
+
+  <div id="reveal">
+    <h2>You just made me the happiest person alive ❤️</h2>
+    <img src="your-gif.gif">
+  </div>
+</div>
+
+<audio id="yesSound" src="celebration.mp3"></audio>
+<audio id="bgMusic" src="romantic-music.mp3" loop></audio>
+
+<script>
+const intro=document.getElementById("intro");
+const main=document.getElementById("main");
+const meter=document.getElementById("meter");
+const noBtn=document.getElementById("noBtn");
+const yesBtn=document.getElementById("yesBtn");
+const reveal=document.getElementById("reveal");
+const sound=document.getElementById("yesSound");
+const bgMusic=document.getElementById("bgMusic");
+
+/* Countdown */
+let count=3;
+let interval=setInterval(()=>{
+  count--;
+  if(count>0){intro.innerHTML=count;}
+  else{
+    clearInterval(interval);
+    intro.style.display="none";
+    main.style.display="block";
+    setTimeout(()=>{meter.style.width="100%";},500);
+  }
+},1000);
+
+/* Floating hearts */
+setInterval(()=>{
+  let heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML="❤️";
+  heart.style.left=Math.random()*100+"%";
+  heart.style.fontSize=(Math.random()*20+10)+"px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),8000);
+},500);
+
+/* Falling petals */
+setInterval(()=>{
+  let petal=document.createElement("div");
+  petal.className="petal";
+  petal.innerHTML="🌸";
+  petal.style.left=Math.random()*100+"%";
+  document.body.appendChild(petal);
+  setTimeout(()=>petal.remove(),6000);
+},700);
+
+/* Move NO button */
+function moveNo(){
+  const x=Math.random()*300-150;
+  const y=Math.random()*150-75;
+  noBtn.style.transform=`translate(${x}px,${y}px)`;
+}
+noBtn.addEventListener("mouseenter",moveNo);
+noBtn.addEventListener("touchstart",moveNo);
+
+/* YES click */
+yesBtn.addEventListener("click",()=>{
+  document.querySelector(".buttons").style.display="none";
+  reveal.style.display="block";
+  sound.play();
+  bgMusic.play();
+
+  if(navigator.vibrate){navigator.vibrate([200,100,200]);}
+
+  if(document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen();
+  }
+
+  confetti({
+    particleCount:200,
+    spread:120,
+    origin:{y:0.6},
+    shapes:['heart'],
+    colors:['#ff1e56','#ffffff','#ff85a2']
+  });
+});
+</script>
+
+</body>
+</html>

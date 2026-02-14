@@ -10,26 +10,55 @@
 <style>
 body{
   margin:0;
-  overflow:hidden;
   font-family:'Segoe UI',sans-serif;
   background:linear-gradient(135deg,#ff758c,#ff7eb3);
   text-align:center;
   color:white;
 }
 
-/* Floating hearts */
-.heart{
+/* Audio Toggle Button */
+#audioToggle{
   position:fixed;
-  bottom:-20px;
+  top:15px;
+  right:15px;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  border:none;
+  background:rgba(0,0,0,0.4);
+  color:white;
   font-size:20px;
-  animation: float 8s linear infinite;
-}
-@keyframes float{
-  from{transform:translateY(0);}
-  to{transform:translateY(-110vh);}
+  cursor:pointer;
+  display:none;
+  z-index:1000;
 }
 
-/* Countdown screen */
+/* Neon */
+#neon{
+  display:none;
+  font-size:60px;
+  margin-top:20px;
+  text-transform:uppercase;
+  animation: neonGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes neonGlow{
+  from{
+    text-shadow:
+      0 0 5px #fff,
+      0 0 10px #ff4da6,
+      0 0 20px #ff4da6,
+      0 0 40px #ff1e56;
+  }
+  to{
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px #ff85c1,
+      0 0 40px #ff1e56,
+      0 0 80px #ff1e56;
+  }
+}
+
+/* Countdown */
 #intro{
   position:fixed;
   width:100%;
@@ -42,15 +71,29 @@ body{
   z-index:5;
 }
 
-/* Main content */
+/* Main */
 #main{
   display:none;
   padding:40px;
 }
 
-h1{
-  font-size:30px;
-  text-shadow:0 0 15px white;
+#compatText{
+  font-size:18px;
+  margin-top:10px;
+}
+
+#meterContainer{
+  width:80%;
+  margin:20px auto;
+  background:white;
+  border-radius:30px;
+  overflow:hidden;
+}
+#meter{
+  height:20px;
+  width:0%;
+  background:#ff1e56;
+  transition:width 2s;
 }
 
 .buttons{
@@ -84,62 +127,37 @@ button{
   top:60px;
 }
 
-/* Reveal */
 #reveal{
   display:none;
   margin-top:30px;
-  animation:fadeIn 1.5s forwards;
-}
-@keyframes fadeIn{
-  from{opacity:0;transform:scale(0.8);}
-  to{opacity:1;transform:scale(1);}
+  padding-bottom:60px;
 }
 
-img{
-  max-width:90%;
-  border-radius:20px;
-  margin-top:20px;
-}
-
-/* Love meter */
-#meterContainer{
-  width:80%;
+#loveGif{
+  width:90vw;
+  max-width:500px;
+  height:auto;
+  display:block;
   margin:20px auto;
-  background:white;
-  border-radius:30px;
-  overflow:hidden;
-}
-#meter{
-  height:20px;
-  width:0%;
-  background:#ff1e56;
-  transition:width 2s;
-}
-
-/* Petals */
-.petal{
-  position:fixed;
-  top:-20px;
-  font-size:18px;
-  animation: fall 6s linear infinite;
-}
-@keyframes fall{
-  to{transform:translateY(110vh);}
+  border-radius:20px;
 }
 </style>
 </head>
 
 <body>
 
+<button id="audioToggle">🔊</button>
+
 <div id="intro">3</div>
 
 <div id="main">
-  <h1>Will you be my Valentine, <span>Neha</span>? 💘</h1>
+  <h1>Will you be my Valentine, Baby? 💘</h1>
 
   <div id="meterContainer">
     <div id="meter"></div>
   </div>
-  <div>Calculating love compatibility...</div>
+
+  <div id="compatText">Calculating love compatibility...</div>
 
   <div class="buttons">
     <button id="noBtn">No</button>
@@ -148,29 +166,37 @@ img{
 
   <div id="reveal">
     <h2>You just made me the happiest person alive ❤️</h2>
-    <img src="your-gif.gif">
+    <div id="neon">I LOVE YOU PILLU!</div>
+
+    <img id="loveGif" src="love.gif" alt="Love GIF">
   </div>
 </div>
 
 <audio id="yesSound" src="celebration.mp3"></audio>
 <audio id="bgMusic" src="romantic-music.mp3" loop></audio>
+<audio id="noSound" src="nope.mp3"></audio>
 
 <script>
 const intro=document.getElementById("intro");
 const main=document.getElementById("main");
 const meter=document.getElementById("meter");
+const compatText=document.getElementById("compatText");
 const noBtn=document.getElementById("noBtn");
 const yesBtn=document.getElementById("yesBtn");
 const reveal=document.getElementById("reveal");
+const neon=document.getElementById("neon");
 const sound=document.getElementById("yesSound");
 const bgMusic=document.getElementById("bgMusic");
+const noSound=document.getElementById("noSound");
+const audioToggle=document.getElementById("audioToggle");
 
 /* Countdown */
 let count=3;
 let interval=setInterval(()=>{
   count--;
-  if(count>0){intro.innerHTML=count;}
-  else{
+  if(count>0){
+    intro.innerHTML=count;
+  }else{
     clearInterval(interval);
     intro.style.display="none";
     main.style.display="block";
@@ -178,56 +204,59 @@ let interval=setInterval(()=>{
   }
 },1000);
 
-/* Floating hearts */
-setInterval(()=>{
-  let heart=document.createElement("div");
-  heart.className="heart";
-  heart.innerHTML="❤️";
-  heart.style.left=Math.random()*100+"%";
-  heart.style.fontSize=(Math.random()*20+10)+"px";
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),8000);
-},500);
-
-/* Falling petals */
-setInterval(()=>{
-  let petal=document.createElement("div");
-  petal.className="petal";
-  petal.innerHTML="🌸";
-  petal.style.left=Math.random()*100+"%";
-  document.body.appendChild(petal);
-  setTimeout(()=>petal.remove(),6000);
-},700);
-
-/* Move NO button */
+/* NO button movement */
 function moveNo(){
+  noSound.currentTime = 0;
+  noSound.play();
   const x=Math.random()*300-150;
   const y=Math.random()*150-75;
   noBtn.style.transform=`translate(${x}px,${y}px)`;
 }
 noBtn.addEventListener("mouseenter",moveNo);
 noBtn.addEventListener("touchstart",moveNo);
+noBtn.addEventListener("click",moveNo);
+
+/* Fireworks */
+function launchFireworks(){
+  confetti({
+    particleCount: 80,
+    spread: 100,
+    startVelocity: 45,
+    origin: { x: Math.random(), y: Math.random() * 0.5 },
+    colors: ['#ff1e56','#ffffff','#ff85a2','#ffd700']
+  });
+}
+
+/* Audio Toggle */
+audioToggle.addEventListener("click",()=>{
+  if(bgMusic.muted){
+    bgMusic.muted=false;
+    audioToggle.innerHTML="🔊";
+  }else{
+    bgMusic.muted=true;
+    audioToggle.innerHTML="🔇";
+  }
+});
 
 /* YES click */
 yesBtn.addEventListener("click",()=>{
+
   document.querySelector(".buttons").style.display="none";
   reveal.style.display="block";
+  neon.style.display="block";
+  audioToggle.style.display="block";
+
+  compatText.innerHTML="Love Compatibility 100% ❤️";
+
   sound.play();
   bgMusic.play();
 
-  if(navigator.vibrate){navigator.vibrate([200,100,200]);}
+  setInterval(launchFireworks,1200);
 
+  /* Auto Fullscreen but still scrollable */
   if(document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen();
   }
-
-  confetti({
-    particleCount:200,
-    spread:120,
-    origin:{y:0.6},
-    shapes:['heart'],
-    colors:['#ff1e56','#ffffff','#ff85a2']
-  });
 });
 </script>
 
